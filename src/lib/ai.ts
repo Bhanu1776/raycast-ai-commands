@@ -29,7 +29,6 @@ export async function* transform(provider: Provider, instruction: string, text: 
       model: prefs.anthropicModel || "claude-haiku-4-5",
       max_tokens: 16000,
       ...(system ? { system } : {}),
-      output_config: { effort: "low" },
       messages: [{ role: "user", content: user }],
     });
     for await (const event of stream) {
