@@ -21,7 +21,7 @@ export async function* transform(provider: Provider, instruction: string, text: 
     if (!prefs.anthropicApiKey) throw new Error("Set your Anthropic API key in the extension preferences.");
     const client = new Anthropic({ apiKey: prefs.anthropicApiKey });
     const stream = client.messages.stream({
-      model: prefs.anthropicModel || "claude-opus-5",
+      model: prefs.anthropicModel || "claude-haiku-4-5",
       max_tokens: 16000,
       system: instruction,
       output_config: { effort: "low" },
@@ -38,7 +38,7 @@ export async function* transform(provider: Provider, instruction: string, text: 
   if (!prefs.openaiApiKey) throw new Error("Set your OpenAI API key in the extension preferences.");
   const client = new OpenAI({ apiKey: prefs.openaiApiKey });
   const stream = await client.chat.completions.create({
-    model: prefs.openaiModel || "gpt-5-mini",
+    model: prefs.openaiModel || "gpt-5.6-luna",
     stream: true,
     messages: [
       { role: "system", content: instruction },

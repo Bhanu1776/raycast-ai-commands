@@ -9,9 +9,9 @@
   "license": "MIT",
   "preferences": [
     { "name": "openaiApiKey", "title": "OpenAI API Key", "type": "password", "required": false, "description": "Used by commands set to OpenAI." },
-    { "name": "openaiModel", "title": "OpenAI Model", "type": "textfield", "required": false, "default": "gpt-5-mini", "description": "Model id for OpenAI commands." },
+    { "name": "openaiModel", "title": "OpenAI Model", "type": "textfield", "required": false, "default": "gpt-5.6-luna", "description": "Model id for OpenAI commands." },
     { "name": "anthropicApiKey", "title": "Anthropic API Key", "type": "password", "required": false, "description": "Used by commands set to Claude." },
-    { "name": "anthropicModel", "title": "Anthropic Model", "type": "textfield", "required": false, "default": "claude-opus-5", "description": "Model id for Claude commands." }
+    { "name": "anthropicModel", "title": "Anthropic Model", "type": "textfield", "required": false, "default": "claude-haiku-4-5", "description": "Model id for Claude commands." }
   ],
   "commands": [
     {
