@@ -1,0 +1,76 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "ai-text",
+  "title": "AI Text (Own Key)",
+  "description": "Fix spelling, improve writing, rewrite and clean selected text with your own OpenAI or Anthropic key.",
+  "icon": "icon.png",
+  "author": "bhanu",
+  "categories": ["Productivity"],
+  "license": "MIT",
+  "preferences": [
+    { "name": "openaiApiKey", "title": "OpenAI API Key", "type": "password", "required": false, "description": "Used by commands set to OpenAI." },
+    { "name": "openaiModel", "title": "OpenAI Model", "type": "textfield", "required": false, "default": "gpt-5-mini", "description": "Model id for OpenAI commands." },
+    { "name": "anthropicApiKey", "title": "Anthropic API Key", "type": "password", "required": false, "description": "Used by commands set to Claude." },
+    { "name": "anthropicModel", "title": "Anthropic Model", "type": "textfield", "required": false, "default": "claude-opus-5", "description": "Model id for Claude commands." }
+  ],
+  "commands": [
+    {
+      "name": "fix-spelling",
+      "title": "Fix Spelling and Grammar",
+      "description": "Fix spelling, grammar and punctuation in the selected text.",
+      "mode": "view",
+      "preferences": [
+        { "name": "provider", "title": "Provider", "type": "dropdown", "required": true, "default": "openai", "data": [ { "title": "OpenAI", "value": "openai" }, { "title": "Claude (Anthropic)", "value": "anthropic" } ] },
+        { "name": "prompt", "title": "Custom Prompt", "type": "textfield", "required": false, "description": "Leave empty to use the built-in prompt." }
+      ]
+    },
+    {
+      "name": "improve-writing",
+      "title": "Improve Writing",
+      "description": "Make the selected text clearer and more natural.",
+      "mode": "view",
+      "preferences": [
+        { "name": "provider", "title": "Provider", "type": "dropdown", "required": true, "default": "openai", "data": [ { "title": "OpenAI", "value": "openai" }, { "title": "Claude (Anthropic)", "value": "anthropic" } ] },
+        { "name": "prompt", "title": "Custom Prompt", "type": "textfield", "required": false, "description": "Leave empty to use the built-in prompt." }
+      ]
+    },
+    {
+      "name": "rewrite",
+      "title": "Rewrite",
+      "description": "Rewrite the selected text in your own style.",
+      "mode": "view",
+      "preferences": [
+        { "name": "provider", "title": "Provider", "type": "dropdown", "required": true, "default": "openai", "data": [ { "title": "OpenAI", "value": "openai" }, { "title": "Claude (Anthropic)", "value": "anthropic" } ] },
+        { "name": "prompt", "title": "Custom Prompt", "type": "textfield", "required": false, "description": "Leave empty to use the built-in prompt." }
+      ]
+    },
+    {
+      "name": "clean-text",
+      "title": "Clean Text",
+      "description": "Strip copy-paste junk, broken line breaks and odd characters.",
+      "mode": "view",
+      "preferences": [
+        { "name": "provider", "title": "Provider", "type": "dropdown", "required": true, "default": "openai", "data": [ { "title": "OpenAI", "value": "openai" }, { "title": "Claude (Anthropic)", "value": "anthropic" } ] },
+        { "name": "prompt", "title": "Custom Prompt", "type": "textfield", "required": false, "description": "Leave empty to use the built-in prompt." }
+      ]
+    }
+  ],
+  "dependencies": {
+    "@anthropic-ai/sdk": "latest",
+    "@raycast/api": "latest",
+    "openai": "latest"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "latest",
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "eslint": "^9",
+    "typescript": "^5"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "lint": "ray lint",
+    "typecheck": "tsc --noEmit"
+  }
+}

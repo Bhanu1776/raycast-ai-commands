@@ -1,0 +1,5 @@
+import { TextCommand } from "./lib/TextCommand";
+
+export default function Command() {
+  return <TextCommand id="rewrite" />;
+}
