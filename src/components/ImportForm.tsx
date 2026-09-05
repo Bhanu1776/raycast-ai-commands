@@ -17,7 +17,7 @@ export function ImportForm({ onDone }: { onDone?: () => void }) {
     async onSubmit(v) {
       const toast = await showToast({ style: Toast.Style.Animated, title: "Reading export…" });
       try {
-        const incoming = readRayconfigCommands(v.file[0], v.password);
+        const incoming = await readRayconfigCommands(v.file[0], v.password);
         const existing = await loadCommands();
         const seen = new Set(existing.map((c) => `${c.title}\n${c.prompt}`));
         let added = 0;

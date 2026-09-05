@@ -18,8 +18,11 @@ import { ImportForm } from "./components/ImportForm";
 import { iconFor } from "./components/icons";
 import { RunView } from "./components/RunView";
 import { resolveModel } from "./lib/ai";
-import { deleteCommand, getCommand, loadCommands, resetPreset } from "./lib/store";
+import { deleteCommand, getCommand, loadCommands, resetPreset, restorePresets } from "./lib/store";
+import { PRESETS } from "./lib/presets";
 import { MODE_LABEL, PROVIDER_LABEL, type AICommand } from "./lib/types";
+
+const PRESET_COUNT = PRESETS.length;
 
 /**
  * The list, or, when launched from a quicklink/deeplink with {"id": "..."} in
@@ -53,12 +56,21 @@ function CommandList() {
   const remove = async (cmd: AICommand) => {
     const ok = await confirmAlert({
       title: `Delete “${cmd.title}”?`,
-      message: cmd.preset ? "You can bring it back later with Reset Presets." : "This cannot be undone.",
+      message: cmd.preset ? "You can bring it back later with Restore Presets." : "This cannot be undone.",
       primaryAction: { title: "Delete", style: Alert.ActionStyle.Destructive },
     });
     if (!ok) return;
     await deleteCommand(cmd.id);
     await showToast({ style: Toast.Style.Success, title: "Deleted", message: cmd.title });
+    revalidate();
+  };
+
+  const restore = async () => {
+    const n = await restorePresets();
+    await showToast({
+      style: Toast.Style.Success,
+      title: n ? `Restored ${n} preset${n === 1 ? "" : "s"}` : "All presets are already here",
+    });
     revalidate();
   };
 
@@ -113,6 +125,7 @@ function CommandList() {
               shortcut={{ modifiers: ["cmd"], key: "i" }}
               onAction={() => push(<ImportForm onDone={revalidate} />)}
             />
+            {presets.length < PRESET_COUNT && <Action title="Restore Presets" icon={Icon.Undo} onAction={restore} />}
             {cmd.preset && (
               <Action
                 title="Reset to Default"
@@ -151,6 +164,7 @@ function CommandList() {
               icon={Icon.Download}
               onAction={() => push(<ImportForm onDone={revalidate} />)}
             />
+            <Action title="Restore Presets" icon={Icon.Undo} onAction={restore} />
           </ActionPanel>
         }
       />

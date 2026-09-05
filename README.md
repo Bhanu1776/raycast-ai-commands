@@ -1,4 +1,4 @@
-# AI Commands · Bring Your Own Key
+# AI Commands (Bring Your Own Key)
 
 Run AI on whatever text you have selected, with your own OpenAI or Anthropic key.
 Select text anywhere, hit a hotkey, review the result, press Enter to replace.

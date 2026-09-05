@@ -8,6 +8,8 @@ export interface Highlight {
   markdown: string;
   /** Number of added or changed words. 0 means the model returned the text unchanged. */
   changes: number;
+  /** True when the reply is mostly new text (a summary, a translation): highlighting it would just bold everything. */
+  rewritten: boolean;
 }
 
 export function highlightAdditions(before: string, after: string): Highlight | null {
@@ -68,7 +70,9 @@ export function highlightAdditions(before: string, after: string): Highlight | n
     })
     .join("");
 
-  return { markdown, changes };
+  const words = b.filter((t) => t.trim()).length;
+  const rewritten = words > 0 && changes / words > 0.6;
+  return { markdown: rewritten ? after : markdown, changes, rewritten };
 }
 
 function tokenize(s: string): string[] {

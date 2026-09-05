@@ -13,10 +13,10 @@ import {
   Keyboard,
   useNavigation,
 } from "@raycast/api";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { resolveModel, runCommand, tidy } from "../lib/ai";
 import { highlightAdditions } from "../lib/diff";
-import { readInput, type InputSource } from "../lib/input";
+import { readInput, type Input, type InputSource } from "../lib/input";
 import { PROVIDER_LABEL, type AICommand, type ExtensionPrefs } from "../lib/types";
 import { CommandForm } from "./CommandForm";
 import { iconFor } from "./icons";
@@ -40,6 +40,8 @@ export function RunView({ command }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
   const [highlight, setHighlight] = useState(getPreferenceValues<ExtensionPrefs>().highlightChanges !== false);
+  // Kept across "Run Again": once Raycast has focus the selection is gone, so re-reading it would fail.
+  const inputRef = useRef<Input | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -48,14 +50,18 @@ export function RunView({ command }: Props) {
     setResult("");
 
     (async () => {
+      let notice: Toast | undefined;
       try {
-        const input = await readInput();
+        const input = inputRef.current ?? (await readInput());
         if (cancelled) return;
+        inputRef.current = input;
         setOriginal(input.text);
         setSource(input.source);
-        if (input.source === "clipboard") {
-          await showToast({
-            style: Toast.Style.Animated,
+        // Clipboard text is a guess at what the user meant. Never paste it anywhere unseen.
+        const mode = input.source === "clipboard" && command.mode === "paste" ? "preview" : command.mode;
+        if (input.source === "clipboard" && inputRef.current === input) {
+          notice = await showToast({
+            style: Toast.Style.Failure,
             title: "No selection, using clipboard",
             message: input.reason,
           });
@@ -65,16 +71,16 @@ export function RunView({ command }: Props) {
         for await (const chunk of runCommand(command, input.text)) {
           if (cancelled) return;
           acc += chunk;
-          if (command.mode === "preview") setResult(acc);
+          if (mode === "preview") setResult(acc);
         }
-        const final = tidy(acc);
+        const final = tidy(acc, input.text);
         setResult(final);
 
-        if (command.mode === "paste") {
+        if (mode === "paste") {
           await closeMainWindow({ clearRootSearch: true });
           await Clipboard.paste(final);
           await popToRoot();
-        } else if (command.mode === "copy") {
+        } else if (mode === "copy") {
           await Clipboard.copy(final);
           await showHUD("Copied to clipboard");
           await popToRoot();
@@ -83,6 +89,7 @@ export function RunView({ command }: Props) {
         if (cancelled) return;
         const message = e instanceof Error ? e.message : String(e);
         setError(message);
+        await notice?.hide();
         await showToast({ style: Toast.Style.Failure, title: command.title, message });
       } finally {
         if (!cancelled) setLoading(false);
@@ -124,7 +131,9 @@ export function RunView({ command }: Props) {
               text={
                 marked.changes === 0
                   ? "None, text kept as is"
-                  : `${marked.changes} word${marked.changes === 1 ? "" : "s"}`
+                  : marked.rewritten
+                    ? "Mostly new text, not highlighted"
+                    : `${marked.changes} word${marked.changes === 1 ? "" : "s"}`
               }
             />
           )}

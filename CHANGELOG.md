@@ -1,4 +1,4 @@
-# AI Commands · Bring Your Own Key Changelog
+# AI Commands (Bring Your Own Key) Changelog
 
 ## [Initial Version] - {PR_MERGE_DATE}
 

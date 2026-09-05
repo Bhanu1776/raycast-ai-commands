@@ -68,7 +68,14 @@ async function expandPlaceholders(prompt: string): Promise<string> {
   return out;
 }
 
-/** Templated prompts often end with "Improved text:"; some models echo that back. */
-export function tidy(output: string): string {
-  return output.replace(/\n*\s*(Improved|Rewritten|Revised|Corrected) text:?\s*$/i, "").trim();
+/**
+ * Cleans model habits that would end up pasted into the user's document:
+ * an echoed "Improved text:" trailer, and quotes wrapped around the whole reply.
+ */
+export function tidy(output: string, original: string): string {
+  let out = output.replace(/\n*\s*(Improved|Rewritten|Revised|Corrected) text:?\s*$/i, "").trim();
+  const wrapped = /^(["'“”‘’`])([\s\S]*)(["'“”‘’`])$/.exec(out);
+  const originalWrapped = /^["'“”‘’`][\s\S]*["'“”‘’`]$/.test(original.trim());
+  if (wrapped && !originalWrapped) out = wrapped[2].trim();
+  return out;
 }
