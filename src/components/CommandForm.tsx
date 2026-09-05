@@ -9,7 +9,7 @@ import {
   type Provider,
   type ResultMode,
 } from "../lib/types";
-import { ICON_CHOICES, iconFor } from "./icons";
+import { ICON_CHOICES, iconFor, iconKey } from "./icons";
 
 interface Values {
   title: string;
@@ -35,7 +35,7 @@ export function CommandForm({ command, template, onSaved }: Props) {
   const { handleSubmit, itemProps, values } = useForm<Values>({
     initialValues: {
       title: command ? command.title : template ? `${template.title} Copy` : "",
-      icon: seed?.icon ?? "Wand",
+      icon: iconKey(seed?.icon ?? "Wand"),
       prompt: seed?.prompt ?? "",
       provider: seed?.provider ?? "openai",
       model: seed?.model ?? "",

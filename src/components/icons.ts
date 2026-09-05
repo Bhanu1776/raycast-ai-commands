@@ -24,6 +24,15 @@ export const ICON_CHOICES = [
   "Emoji",
 ] as const;
 
+const byKey = Icon as unknown as Record<string, Icon>;
+const byValue = new Map(Object.entries(byKey).map(([k, v]) => [v as string, k]));
+
+/** Accepts an `Icon` key ("Wand") or a raw Raycast icon id ("wand-16", as found in exports). */
 export function iconFor(name: string): Icon {
-  return (Icon as Record<string, Icon>)[name] ?? Icon.Wand;
+  return byKey[iconKey(name)] ?? Icon.Wand;
+}
+
+export function iconKey(name: string): string {
+  if (name in byKey) return name;
+  return byValue.get(name) ?? "Wand";
 }

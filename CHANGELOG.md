@@ -6,4 +6,6 @@
 - Eight presets: Fix Spelling and Grammar, Improve Writing, Rewrite, Clean Text, Make Shorter, Make Longer, Summarize, Explain This
 - Streams results from OpenAI or Anthropic using your own API key
 - Enter pastes over the selection, or paste and copy automatically
-- Quicklink action so any command can get a global hotkey
+- Quicklink action so any command can get a global hotkey and a root-search entry
+- Import your old AI Commands from a Raycast export file
+- "Show Changes" view highlights what the model changed, word by word

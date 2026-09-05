@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
-import { getPreferenceValues } from "@raycast/api";
+import { Clipboard, getPreferenceValues } from "@raycast/api";
 import { DEFAULT_MODELS, type AICommand, type ExtensionPrefs } from "./types";
 
 export function resolveModel(cmd: Pick<AICommand, "provider" | "model">): string {
@@ -20,9 +20,10 @@ export function resolveModel(cmd: Pick<AICommand, "provider" | "model">): string
 export async function* runCommand(cmd: AICommand, text: string): AsyncGenerator<string> {
   const prefs = getPreferenceValues<ExtensionPrefs>();
   const model = resolveModel(cmd);
-  const templated = cmd.prompt.includes("{selection}");
-  const system = templated ? undefined : cmd.prompt;
-  const user = templated ? cmd.prompt.split("{selection}").join(text) : `<text>\n${text}\n</text>`;
+  const prompt = await expandPlaceholders(cmd.prompt);
+  const templated = prompt.includes("{selection}");
+  const system = templated ? undefined : prompt;
+  const user = templated ? prompt.split("{selection}").join(text) : `<text>\n${text}\n</text>`;
 
   if (cmd.provider === "anthropic") {
     if (!prefs.anthropicApiKey) throw new Error("Add your Anthropic API key in the extension preferences (⌘ ,).");
@@ -55,6 +56,16 @@ export async function* runCommand(cmd: AICommand, text: string): AsyncGenerator<
     const delta = chunk.choices[0]?.delta?.content;
     if (delta) yield delta;
   }
+}
+
+/**
+ * Raycast prompt placeholders we honour besides {selection}:
+ * {clipboard} → current clipboard text, {argument name=x default="y"} → y.
+ */
+async function expandPlaceholders(prompt: string): Promise<string> {
+  let out = prompt.replace(/\{argument[^}]*?default="([^"]*)"[^}]*\}/g, "$1").replace(/\{argument[^}]*\}/g, "");
+  if (out.includes("{clipboard}")) out = out.split("{clipboard}").join((await Clipboard.readText()) ?? "");
+  return out;
 }
 
 /** Templated prompts often end with "Improved text:"; some models echo that back. */

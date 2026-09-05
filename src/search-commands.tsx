@@ -3,22 +3,47 @@ import {
   ActionPanel,
   Alert,
   confirmAlert,
+  Detail,
   Icon,
   Keyboard,
   List,
   showToast,
   Toast,
   useNavigation,
+  type LaunchProps,
 } from "@raycast/api";
 import { createDeeplink, useCachedPromise } from "@raycast/utils";
 import { CommandForm } from "./components/CommandForm";
+import { ImportForm } from "./components/ImportForm";
 import { iconFor } from "./components/icons";
 import { RunView } from "./components/RunView";
 import { resolveModel } from "./lib/ai";
-import { deleteCommand, loadCommands, resetPreset } from "./lib/store";
+import { deleteCommand, getCommand, loadCommands, resetPreset } from "./lib/store";
 import { MODE_LABEL, PROVIDER_LABEL, type AICommand } from "./lib/types";
 
-export default function Command() {
+/**
+ * The list, or, when launched from a quicklink/deeplink with {"id": "..."} in
+ * the context, that one command straight away. One root entry, any hotkey.
+ */
+export default function Command(props: LaunchProps<{ launchContext?: { id?: string } }>) {
+  const id = props.launchContext?.id;
+  if (id) return <Direct id={id} />;
+  return <CommandList />;
+}
+
+function Direct({ id }: { id: string }) {
+  const { data, isLoading } = useCachedPromise(getCommand, [id]);
+  if (isLoading) return <Detail isLoading markdown="" />;
+  if (!data)
+    return (
+      <Detail
+        markdown={`## Command not found\n\nNo AI command with id \`${id}\`. Recreate the quicklink from **Search AI Commands**.`}
+      />
+    );
+  return <RunView command={data} />;
+}
+
+function CommandList() {
   const { push } = useNavigation();
   const { data, isLoading, revalidate } = useCachedPromise(loadCommands, [], { keepPreviousData: true });
   const commands = data ?? [];
@@ -68,7 +93,10 @@ export default function Command() {
             <Action.CreateQuicklink
               title="Create Quicklink for Hotkey"
               icon={Icon.Keyboard}
-              quicklink={{ name: cmd.title, link: createDeeplink({ command: "run-command", context: { id: cmd.id } }) }}
+              quicklink={{
+                name: cmd.title,
+                link: createDeeplink({ command: "search-commands", context: { id: cmd.id } }),
+              }}
             />
             <Action.CopyToClipboard title="Copy Prompt" content={cmd.prompt} shortcut={Keyboard.Shortcut.Common.Copy} />
           </ActionPanel.Section>
@@ -78,6 +106,12 @@ export default function Command() {
               icon={Icon.Plus}
               shortcut={Keyboard.Shortcut.Common.New}
               onAction={() => push(<CommandForm onSaved={revalidate} />)}
+            />
+            <Action
+              title="Import from Raycast Export"
+              icon={Icon.Download}
+              shortcut={{ modifiers: ["cmd"], key: "i" }}
+              onAction={() => push(<ImportForm onDone={revalidate} />)}
             />
             {cmd.preset && (
               <Action
@@ -112,6 +146,11 @@ export default function Command() {
         actions={
           <ActionPanel>
             <Action title="New Command" icon={Icon.Plus} onAction={() => push(<CommandForm onSaved={revalidate} />)} />
+            <Action
+              title="Import from Raycast Export"
+              icon={Icon.Download}
+              onAction={() => push(<ImportForm onDone={revalidate} />)}
+            />
           </ActionPanel>
         }
       />

@@ -1,12 +1,25 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "ai-commands-own-key",
-  "title": "AI Commands · Bring Your Own Key",
+  "title": "AI Commands \u00b7 Bring Your Own Key",
   "description": "Fix spelling, improve writing, rewrite, summarize, or run any prompt you write on selected text, using your own OpenAI or Anthropic key. No Raycast Pro needed.",
   "icon": "icon.png",
   "author": "bhanu",
-  "categories": ["Productivity"],
-  "keywords": ["ai", "gpt", "claude", "openai", "anthropic", "writing", "grammar", "spelling", "rewrite", "byok"],
+  "categories": [
+    "Productivity"
+  ],
+  "keywords": [
+    "ai",
+    "gpt",
+    "claude",
+    "openai",
+    "anthropic",
+    "writing",
+    "grammar",
+    "spelling",
+    "rewrite",
+    "byok"
+  ],
   "license": "MIT",
   "preferences": [
     {
@@ -45,51 +58,15 @@
       "name": "search-commands",
       "title": "Search AI Commands",
       "subtitle": "AI Commands",
-      "description": "Browse, run, create, edit and delete your AI commands.",
+      "description": "Run, create, edit, import and delete your AI commands. Also the target for hotkey quicklinks.",
       "mode": "view"
     },
     {
       "name": "create-command",
       "title": "Create AI Command",
       "subtitle": "AI Commands",
-      "description": "Write a new command with its own prompt, provider and model.",
+      "description": "Write a new command with its own prompt, provider, model and result mode.",
       "mode": "view"
-    },
-    {
-      "name": "fix-spelling",
-      "title": "Fix Spelling and Grammar",
-      "subtitle": "AI Commands",
-      "description": "Fix spelling, grammar and punctuation in the selected text.",
-      "mode": "view"
-    },
-    {
-      "name": "improve-writing",
-      "title": "Improve Writing",
-      "subtitle": "AI Commands",
-      "description": "Make the selected text clearer and more natural.",
-      "mode": "view"
-    },
-    {
-      "name": "rewrite",
-      "title": "Rewrite",
-      "subtitle": "AI Commands",
-      "description": "Rewrite the selected text, keeping its tone.",
-      "mode": "view"
-    },
-    {
-      "name": "clean-text",
-      "title": "Clean Text",
-      "subtitle": "AI Commands",
-      "description": "Tighten the selected text and remove noise.",
-      "mode": "view"
-    },
-    {
-      "name": "run-command",
-      "title": "Run AI Command",
-      "subtitle": "AI Commands",
-      "description": "Target for quicklinks and deeplinks. Use “Create Quicklink for Hotkey” in Search AI Commands.",
-      "mode": "view",
-      "disabledByDefault": true
     }
   ],
   "dependencies": {

@@ -8,14 +8,12 @@ No Raycast Pro needed.
 
 | Command | What it does |
 | --- | --- |
-| **Search AI Commands** | Browse, run, edit, duplicate and delete your commands |
+| **Search AI Commands** | Browse, run, edit, duplicate, import and delete your commands |
 | **Create AI Command** | Write a new command: title, prompt, provider, model, and what to do when done |
-| **Fix Spelling and Grammar** | Preset, ready for a hotkey |
-| **Improve Writing** | Preset, ready for a hotkey |
-| **Rewrite** | Preset, ready for a hotkey |
-| **Clean Text** | Preset, ready for a hotkey |
 
-Eight presets ship with the extension. Edit them, delete them, or reset them.
+Eight presets ship with the extension: Fix Spelling and Grammar, Improve Writing,
+Rewrite, Clean Text, Make Shorter, Make Longer, Summarize, Explain This.
+Edit them, delete them, or reset them.
 
 ## Setup
 
@@ -36,17 +34,26 @@ Text:
 
 Without `{selection}`, the prompt is sent as instructions and the text follows it.
 
-## Hotkeys
+## Hotkeys and root search
 
-The four preset commands can get a hotkey directly in Raycast settings.
-For any other command: open **Search AI Commands**, pick the command, choose
-**Create Quicklink for Hotkey**, then assign a hotkey to that quicklink.
+Open **Search AI Commands**, pick a command, choose **Create Quicklink for Hotkey**.
+The quicklink shows up in Raycast's root search under the command's name, and
+you can give it a global hotkey in Raycast settings, like any other command.
+
+## Coming from Raycast AI?
+
+Your old AI Commands can be imported in one go. In Raycast go to
+Settings → Extensions → Raycast → **Export Settings & Data**. Then in
+**Search AI Commands** press `⌘ I`, pick the `.rayconfig` file and enter the
+export password (Raycast's default is `12345678`). Titles, prompts, icons and
+provider come across. `{selection}`, `{clipboard}` and `{argument default="…"}`
+placeholders keep working.
 
 ## When done
 
 Each command chooses what happens after the model replies:
 
-- **Show result, paste on Enter**: streams into a window. Enter replaces the selection, `⌘ Enter` copies.
+- **Show result, paste on Enter**: streams into a window. Enter replaces the selection, `⌘ Enter` copies, `⌘ ⇧ D` shows what changed word by word.
 - **Paste over selection right away**: no window, the text is replaced as soon as it is ready.
 - **Copy to clipboard**: for apps where pasting is awkward.
 

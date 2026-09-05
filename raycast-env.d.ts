@@ -26,16 +26,6 @@ declare namespace Preferences {
   export type SearchCommands = ExtensionPreferences & {}
   /** Preferences accessible in the `create-command` command */
   export type CreateCommand = ExtensionPreferences & {}
-  /** Preferences accessible in the `fix-spelling` command */
-  export type FixSpelling = ExtensionPreferences & {}
-  /** Preferences accessible in the `improve-writing` command */
-  export type ImproveWriting = ExtensionPreferences & {}
-  /** Preferences accessible in the `rewrite` command */
-  export type Rewrite = ExtensionPreferences & {}
-  /** Preferences accessible in the `clean-text` command */
-  export type CleanText = ExtensionPreferences & {}
-  /** Preferences accessible in the `run-command` command */
-  export type RunCommand = ExtensionPreferences & {}
 }
 
 declare namespace Arguments {
@@ -43,15 +33,5 @@ declare namespace Arguments {
   export type SearchCommands = {}
   /** Arguments passed to the `create-command` command */
   export type CreateCommand = {}
-  /** Arguments passed to the `fix-spelling` command */
-  export type FixSpelling = {}
-  /** Arguments passed to the `improve-writing` command */
-  export type ImproveWriting = {}
-  /** Arguments passed to the `rewrite` command */
-  export type Rewrite = {}
-  /** Arguments passed to the `clean-text` command */
-  export type CleanText = {}
-  /** Arguments passed to the `run-command` command */
-  export type RunCommand = {}
 }
 
