@@ -25,6 +25,7 @@ export interface ExtensionPrefs {
   openaiModel?: string;
   anthropicApiKey?: string;
   anthropicModel?: string;
+  highlightChanges?: boolean;
 }
 
 export const DEFAULT_MODELS: Record<Provider, string> = {

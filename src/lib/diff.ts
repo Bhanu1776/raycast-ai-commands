@@ -1,9 +1,16 @@
 /**
- * Word-level diff rendered as markdown: removed words are ~~struck~~,
- * added words are **bold**. Plain LCS, no dependency. Returns null when the
- * texts are too big to diff cheaply.
+ * Marks what the model added or changed, inline, in the result text.
+ * Words that are new or replaced come out **bold**; removed words are not
+ * shown, so the text still reads as the final version. Plain LCS on
+ * whitespace-separated tokens, no dependency.
  */
-export function diffMarkdown(before: string, after: string): string | null {
+export interface Highlight {
+  markdown: string;
+  /** Number of added or changed words. 0 means the model returned the text unchanged. */
+  changes: number;
+}
+
+export function highlightAdditions(before: string, after: string): Highlight | null {
   const a = tokenize(before);
   const b = tokenize(after);
   if (a.length * b.length > 4_000_000) return null;
@@ -17,42 +24,51 @@ export function diffMarkdown(before: string, after: string): string | null {
     }
   }
 
-  type Op = { kind: "eq" | "del" | "ins"; text: string };
-  const ops: Op[] = [];
-  const push = (kind: Op["kind"], text: string) => {
-    const last = ops[ops.length - 1];
-    if (last && last.kind === kind) last.text += text;
-    else ops.push({ kind, text });
+  // Walk the LCS table; collect the "after" tokens, remembering which are new.
+  const parts: { text: string; added: boolean }[] = [];
+  const push = (text: string, added: boolean) => {
+    const last = parts[parts.length - 1];
+    if (last && last.added === added) last.text += text;
+    else parts.push({ text, added });
   };
   let i = 0;
   let j = 0;
   while (i < n && j < m) {
     if (a[i] === b[j]) {
-      push("eq", a[i]);
+      push(b[j], false);
       i++;
       j++;
     } else if (dp[i + 1][j] >= dp[i][j + 1]) {
-      push("del", a[i]);
-      i++;
+      i++; // removed from the original: not shown
     } else {
-      push("ins", b[j]);
+      push(b[j], true);
       j++;
     }
   }
-  while (i < n) push("del", a[i++]);
-  while (j < m) push("ins", b[j++]);
+  while (j < m) push(b[j++], true);
 
-  return ops
-    .map((op) => {
-      if (op.kind === "eq") return op.text;
-      // Keep surrounding whitespace outside the markers so ~~ and ** render.
-      const lead = op.text.match(/^\s*/)?.[0] ?? "";
-      const trail = op.text.match(/\s*$/)?.[0] ?? "";
-      const core = op.text.trim();
-      if (!core) return op.text;
-      return op.kind === "del" ? `${lead}~~${core}~~${trail}` : `${lead}**${core}**${trail}`;
+  let changes = 0;
+  const markdown = parts
+    .map((p) => {
+      if (!p.added) return p.text;
+      // Keep whitespace outside the markers so ** renders, and bold each
+      // line separately so a highlight never spans a line break.
+      return p.text
+        .split(/(\n+)/)
+        .map((seg) => {
+          if (!seg || /^\n+$/.test(seg)) return seg;
+          const lead = seg.match(/^\s*/)?.[0] ?? "";
+          const trail = seg.match(/\s*$/)?.[0] ?? "";
+          const core = seg.trim();
+          if (!core) return seg;
+          changes += core.split(/\s+/).length;
+          return `${lead}**${core}**${trail}`;
+        })
+        .join("");
     })
     .join("");
+
+  return { markdown, changes };
 }
 
 function tokenize(s: string): string[] {

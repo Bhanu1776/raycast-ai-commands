@@ -51,6 +51,15 @@
       "required": false,
       "default": "claude-haiku-4-5",
       "description": "Used when a command leaves its model empty."
+    },
+    {
+      "name": "highlightChanges",
+      "title": "Result View",
+      "label": "Highlight what changed",
+      "type": "checkbox",
+      "required": false,
+      "default": true,
+      "description": "Show new or changed words in bold in the result window. Pasting always uses the plain text."
     }
   ],
   "commands": [
@@ -66,6 +75,62 @@
       "title": "Create AI Command",
       "subtitle": "AI Commands",
       "description": "Write a new command with its own prompt, provider, model and result mode.",
+      "mode": "view"
+    },
+    {
+      "name": "fix-spelling",
+      "title": "Fix Spelling and Grammar",
+      "subtitle": "AI Commands",
+      "description": "Fix spelling, grammar and punctuation in the selected text.",
+      "mode": "view"
+    },
+    {
+      "name": "improve-writing",
+      "title": "Improve Writing",
+      "subtitle": "AI Commands",
+      "description": "Make the selected text clearer and more natural.",
+      "mode": "view"
+    },
+    {
+      "name": "rewrite",
+      "title": "Rewrite",
+      "subtitle": "AI Commands",
+      "description": "Rewrite the selected text, keeping its tone.",
+      "mode": "view"
+    },
+    {
+      "name": "clean-text",
+      "title": "Clean Text",
+      "subtitle": "AI Commands",
+      "description": "Tighten the selected text and remove noise.",
+      "mode": "view"
+    },
+    {
+      "name": "make-shorter",
+      "title": "Make Shorter",
+      "subtitle": "AI Commands",
+      "description": "Cut the selected text down, keeping the key points.",
+      "mode": "view"
+    },
+    {
+      "name": "make-longer",
+      "title": "Make Longer",
+      "subtitle": "AI Commands",
+      "description": "Expand the selected text with more detail.",
+      "mode": "view"
+    },
+    {
+      "name": "summarize",
+      "title": "Summarize",
+      "subtitle": "AI Commands",
+      "description": "Summarize the selected text in a paragraph and bullet points.",
+      "mode": "view"
+    },
+    {
+      "name": "explain",
+      "title": "Explain This",
+      "subtitle": "AI Commands",
+      "description": "Explain the selected text in simple words.",
       "mode": "view"
     }
   ],

@@ -10,10 +10,16 @@ No Raycast Pro needed.
 | --- | --- |
 | **Search AI Commands** | Browse, run, edit, duplicate, import and delete your commands |
 | **Create AI Command** | Write a new command: title, prompt, provider, model, and what to do when done |
+| **Fix Spelling and Grammar** | Preset, in root search, ready for a hotkey |
+| **Improve Writing** | Preset |
+| **Rewrite** | Preset |
+| **Clean Text** | Preset |
+| **Make Shorter** | Preset |
+| **Make Longer** | Preset |
+| **Summarize** | Preset |
+| **Explain This** | Preset |
 
-Eight presets ship with the extension: Fix Spelling and Grammar, Improve Writing,
-Rewrite, Clean Text, Make Shorter, Make Longer, Summarize, Explain This.
-Edit them, delete them, or reset them.
+Presets can be edited, deleted, or reset from **Search AI Commands**.
 
 ## Setup
 
@@ -36,9 +42,10 @@ Without `{selection}`, the prompt is sent as instructions and the text follows i
 
 ## Hotkeys and root search
 
-Open **Search AI Commands**, pick a command, choose **Create Quicklink for Hotkey**.
-The quicklink shows up in Raycast's root search under the command's name, and
-you can give it a global hotkey in Raycast settings, like any other command.
+Presets are regular commands: give them a hotkey in Raycast settings.
+For a command you created or imported, open **Search AI Commands**, pick it,
+and choose **Create Quicklink for Hotkey**. The quicklink shows up in root
+search under the command's name and can take a global hotkey too.
 
 ## Coming from Raycast AI?
 
@@ -53,7 +60,7 @@ placeholders keep working.
 
 Each command chooses what happens after the model replies:
 
-- **Show result, paste on Enter**: streams into a window. Enter replaces the selection, `⌘ Enter` copies, `⌘ ⇧ D` shows what changed word by word.
+- **Show result, paste on Enter**: streams into a window. New or changed words are shown in bold so you can see what the model did. Enter replaces the selection with the plain text, `⌘ Enter` copies it. `⌘ ⇧ H` hides the highlights; the preference "Highlight what changed" turns them off for good.
 - **Paste over selection right away**: no window, the text is replaced as soon as it is ready.
 - **Copy to clipboard**: for apps where pasting is awkward.
 

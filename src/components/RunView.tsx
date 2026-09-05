@@ -4,6 +4,7 @@ import {
   Clipboard,
   closeMainWindow,
   Detail,
+  getPreferenceValues,
   Icon,
   popToRoot,
   showHUD,
@@ -14,9 +15,9 @@ import {
 } from "@raycast/api";
 import { useEffect, useState } from "react";
 import { resolveModel, runCommand, tidy } from "../lib/ai";
-import { diffMarkdown } from "../lib/diff";
+import { highlightAdditions } from "../lib/diff";
 import { readInput, type InputSource } from "../lib/input";
-import { PROVIDER_LABEL, type AICommand } from "../lib/types";
+import { PROVIDER_LABEL, type AICommand, type ExtensionPrefs } from "../lib/types";
 import { CommandForm } from "./CommandForm";
 import { iconFor } from "./icons";
 
@@ -38,7 +39,7 @@ export function RunView({ command }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
-  const [showDiff, setShowDiff] = useState(false);
+  const [highlight, setHighlight] = useState(getPreferenceValues<ExtensionPrefs>().highlightChanges !== false);
 
   useEffect(() => {
     let cancelled = false;
@@ -94,12 +95,10 @@ export function RunView({ command }: Props) {
   }, [attempt]);
 
   const model = resolveModel(command);
-  const diff = showDiff && !loading && result ? diffMarkdown(original, result) : null;
+  const marked = highlight && !loading && result ? highlightAdditions(original, result) : null;
   const markdown = error
     ? `## Something went wrong\n\n${error}`
-    : diff
-      ? `${diff}\n\n---\n_~~removed~~ · **added**_`
-      : result || (loading ? `_${command.title}…_` : "_Nothing came back._");
+    : (marked?.markdown ?? result) || (loading ? `_${command.title}…_` : "_Nothing came back._");
 
   return (
     <Detail
@@ -119,6 +118,16 @@ export function RunView({ command }: Props) {
             </Detail.Metadata.TagList>
           )}
           {original && <Detail.Metadata.Label title="Length" text={`${original.length} → ${result.length} chars`} />}
+          {marked && (
+            <Detail.Metadata.Label
+              title="Changes"
+              text={
+                marked.changes === 0
+                  ? "None, text kept as is"
+                  : `${marked.changes} word${marked.changes === 1 ? "" : "s"}`
+              }
+            />
+          )}
         </Detail.Metadata>
       }
       actions={
@@ -132,10 +141,10 @@ export function RunView({ command }: Props) {
           <ActionPanel.Section>
             {!loading && result && (
               <Action
-                title={showDiff ? "Show Result" : "Show Changes"}
-                icon={showDiff ? Icon.Text : Icon.Highlight}
-                shortcut={{ modifiers: ["cmd", "shift"], key: "d" }}
-                onAction={() => setShowDiff((v) => !v)}
+                title={highlight ? "Hide Changes" : "Highlight Changes"}
+                icon={highlight ? Icon.EyeDisabled : Icon.Highlight}
+                shortcut={{ modifiers: ["cmd", "shift"], key: "h" }}
+                onAction={() => setHighlight((v) => !v)}
               />
             )}
             <Action
