@@ -1,6 +1,6 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
-  "name": "ai-commands-own-key",
+  "name": "ai-commands-byok",
   "title": "AI Commands (Bring Your Own Key)",
   "description": "Fix spelling, improve writing, rewrite, summarize, or run any prompt you write on selected text, using your own OpenAI or Anthropic key.",
   "icon": "icon.png",
