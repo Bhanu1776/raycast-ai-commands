@@ -8,13 +8,13 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 type ExtensionPreferences = {
-  /** OpenAI API Key - Used by commands set to OpenAI. */
+  /** OpenAI API Key - Used by commands set to OpenAI. Stored locally by Raycast. */
   "openaiApiKey"?: string,
-  /** OpenAI Model - Model id for OpenAI commands. */
+  /** Default OpenAI Model - Used when a command leaves its model empty. */
   "openaiModel": string,
-  /** Anthropic API Key - Used by commands set to Claude. */
+  /** Anthropic API Key - Used by commands set to Claude. Stored locally by Raycast. */
   "anthropicApiKey"?: string,
-  /** Anthropic Model - Model id for Claude commands. */
+  /** Default Anthropic Model - Used when a command leaves its model empty. */
   "anthropicModel": string
 }
 
@@ -22,37 +22,27 @@ type ExtensionPreferences = {
 declare type Preferences = ExtensionPreferences
 
 declare namespace Preferences {
+  /** Preferences accessible in the `search-commands` command */
+  export type SearchCommands = ExtensionPreferences & {}
+  /** Preferences accessible in the `create-command` command */
+  export type CreateCommand = ExtensionPreferences & {}
   /** Preferences accessible in the `fix-spelling` command */
-  export type FixSpelling = ExtensionPreferences & {
-  /** Provider - undefined */
-  "provider": "openai" | "anthropic",
-  /** Custom Prompt - Leave empty to use the built-in prompt. */
-  "prompt"?: string
-}
+  export type FixSpelling = ExtensionPreferences & {}
   /** Preferences accessible in the `improve-writing` command */
-  export type ImproveWriting = ExtensionPreferences & {
-  /** Provider - undefined */
-  "provider": "openai" | "anthropic",
-  /** Custom Prompt - Leave empty to use the built-in prompt. */
-  "prompt"?: string
-}
+  export type ImproveWriting = ExtensionPreferences & {}
   /** Preferences accessible in the `rewrite` command */
-  export type Rewrite = ExtensionPreferences & {
-  /** Provider - undefined */
-  "provider": "openai" | "anthropic",
-  /** Custom Prompt - Leave empty to use the built-in prompt. */
-  "prompt"?: string
-}
+  export type Rewrite = ExtensionPreferences & {}
   /** Preferences accessible in the `clean-text` command */
-  export type CleanText = ExtensionPreferences & {
-  /** Provider - undefined */
-  "provider": "openai" | "anthropic",
-  /** Custom Prompt - Leave empty to use the built-in prompt. */
-  "prompt"?: string
-}
+  export type CleanText = ExtensionPreferences & {}
+  /** Preferences accessible in the `run-command` command */
+  export type RunCommand = ExtensionPreferences & {}
 }
 
 declare namespace Arguments {
+  /** Arguments passed to the `search-commands` command */
+  export type SearchCommands = {}
+  /** Arguments passed to the `create-command` command */
+  export type CreateCommand = {}
   /** Arguments passed to the `fix-spelling` command */
   export type FixSpelling = {}
   /** Arguments passed to the `improve-writing` command */
@@ -61,5 +51,7 @@ declare namespace Arguments {
   export type Rewrite = {}
   /** Arguments passed to the `clean-text` command */
   export type CleanText = {}
+  /** Arguments passed to the `run-command` command */
+  export type RunCommand = {}
 }
 

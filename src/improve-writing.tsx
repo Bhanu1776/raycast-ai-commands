@@ -1,5 +1,10 @@
-import { TextCommand } from "./lib/TextCommand";
+import { Detail } from "@raycast/api";
+import { useCachedPromise } from "@raycast/utils";
+import { RunView } from "./components/RunView";
+import { getCommand } from "./lib/store";
 
 export default function Command() {
-  return <TextCommand id="improve-writing" />;
+  const { data, isLoading } = useCachedPromise(getCommand, ["improve-writing"]);
+  if (isLoading || !data) return <Detail isLoading={isLoading} markdown="" />;
+  return <RunView command={data} />;
 }

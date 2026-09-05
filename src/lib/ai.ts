@@ -1,32 +1,34 @@
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import { getPreferenceValues } from "@raycast/api";
+import { DEFAULT_MODELS, type AICommand, type ExtensionPrefs } from "./types";
 
-export type Provider = "openai" | "anthropic";
-
-interface ExtensionPrefs {
-  openaiApiKey?: string;
-  openaiModel?: string;
-  anthropicApiKey?: string;
-  anthropicModel?: string;
+export function resolveModel(cmd: Pick<AICommand, "provider" | "model">): string {
+  const prefs = getPreferenceValues<ExtensionPrefs>();
+  const fromPrefs = cmd.provider === "openai" ? prefs.openaiModel : prefs.anthropicModel;
+  return cmd.model?.trim() || fromPrefs?.trim() || DEFAULT_MODELS[cmd.provider];
 }
 
-// Streams the model's reply as text chunks. The text goes inside <text> tags
-// so instructions hidden in the selection are treated as content, not commands.
-export async function* transform(provider: Provider, instruction: string, text: string): AsyncGenerator<string> {
+/**
+ * Streams the model's reply as text chunks.
+ *
+ * A prompt containing `{selection}` becomes the whole user message with the
+ * text substituted in, exactly like Raycast's own AI Commands. A prompt
+ * without it is sent as the system prompt and the text follows in <text>
+ * tags, so instructions hidden inside the selection are treated as content.
+ */
+export async function* runCommand(cmd: AICommand, text: string): AsyncGenerator<string> {
   const prefs = getPreferenceValues<ExtensionPrefs>();
-  // Raycast-style template: {selection} in the prompt means "this is the whole
-  // user message". Otherwise the prompt is the system prompt and the text is
-  // wrapped so instructions inside the selection are treated as content.
-  const templated = instruction.includes("{selection}");
-  const system = templated ? undefined : instruction;
-  const user = templated ? instruction.split("{selection}").join(text) : `<text>\n${text}\n</text>`;
+  const model = resolveModel(cmd);
+  const templated = cmd.prompt.includes("{selection}");
+  const system = templated ? undefined : cmd.prompt;
+  const user = templated ? cmd.prompt.split("{selection}").join(text) : `<text>\n${text}\n</text>`;
 
-  if (provider === "anthropic") {
-    if (!prefs.anthropicApiKey) throw new Error("Set your Anthropic API key in the extension preferences.");
+  if (cmd.provider === "anthropic") {
+    if (!prefs.anthropicApiKey) throw new Error("Add your Anthropic API key in the extension preferences (⌘ ,).");
     const client = new Anthropic({ apiKey: prefs.anthropicApiKey });
     const stream = client.messages.stream({
-      model: prefs.anthropicModel || "claude-haiku-4-5",
+      model,
       max_tokens: 16000,
       ...(system ? { system } : {}),
       messages: [{ role: "user", content: user }],
@@ -39,15 +41,23 @@ export async function* transform(provider: Provider, instruction: string, text: 
     return;
   }
 
-  if (!prefs.openaiApiKey) throw new Error("Set your OpenAI API key in the extension preferences.");
+  if (!prefs.openaiApiKey) throw new Error("Add your OpenAI API key in the extension preferences (⌘ ,).");
   const client = new OpenAI({ apiKey: prefs.openaiApiKey });
   const stream = await client.chat.completions.create({
-    model: prefs.openaiModel || "gpt-5.6-luna",
+    model,
     stream: true,
-    messages: [...(system ? [{ role: "system" as const, content: system }] : []), { role: "user" as const, content: user }],
+    messages: [
+      ...(system ? [{ role: "system" as const, content: system }] : []),
+      { role: "user" as const, content: user },
+    ],
   });
   for await (const chunk of stream) {
     const delta = chunk.choices[0]?.delta?.content;
     if (delta) yield delta;
   }
+}
+
+/** Templated prompts often end with "Improved text:"; some models echo that back. */
+export function tidy(output: string): string {
+  return output.replace(/\n*\s*(Improved|Rewritten|Revised|Corrected) text:?\s*$/i, "").trim();
 }
