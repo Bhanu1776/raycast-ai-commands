@@ -15,7 +15,7 @@ import {
 } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
 import { resolveModel, runCommand, tidy } from "../lib/ai";
-import { highlightAdditions } from "../lib/diff";
+import { boldChanges, wordChanges } from "../lib/diff";
 import { readInput, type Input, type InputSource } from "../lib/input";
 import { PROVIDER_LABEL, type AICommand, type ExtensionPrefs } from "../lib/types";
 import { CommandForm } from "./CommandForm";
@@ -102,10 +102,13 @@ export function RunView({ command }: Props) {
   }, [attempt]);
 
   const model = resolveModel(command);
-  const marked = highlight && !loading && result ? highlightAdditions(original, result) : null;
+  const marked = highlight && !loading && result ? wordChanges(original, result) : null;
+  const showBold = marked !== null && marked.changes > 0 && !marked.rewritten;
   const markdown = error
     ? `## Something went wrong\n\n${error}`
-    : (marked?.markdown ?? result) || (loading ? `_${command.title}…_` : "_Nothing came back._");
+    : showBold
+      ? boldChanges(marked.parts)
+      : result || (loading ? `_${command.title}…_` : "_Nothing came back._");
 
   return (
     <Detail
